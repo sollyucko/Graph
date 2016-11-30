@@ -60,13 +60,17 @@ public class Graph {
 			return "<svg></svg>";
 		}
 		
-		String string = "<svg viewbox=\"" + xmin.subtract(BigDecimal.ONE) + " " + ymin.subtract(BigDecimal.ONE) + " " + xmax.subtract(xmin).add(BigDecimal.ONE).add(BigDecimal.ONE) + " " + ymax.subtract(ymin).add(BigDecimal.ONE).add(BigDecimal.ONE) + "\">\n";
+		String string = "<svg viewbox=\"" + xmin.subtract(BigDecimal.ONE) + " " + ymin.subtract(ymax).subtract(BigDecimal.ONE) + " " + xmax.subtract(xmin).add(BigDecimal.ONE).add(BigDecimal.ONE) + " " + ymax.subtract(ymin).add(BigDecimal.ONE).add(BigDecimal.ONE) + "\">\n";
+		string += "\t<g transform=\"translate(0, " + ymin + ") scale(1,-1)\">\n";
+		string += "\t\t<line x1=\"" + xmin + "\" y1=\"" + ymin + "\" x2=\"" + xmin + "\" y2=\"" + ymax + "\" stroke-width=\"1\" stroke=\"black\"/>\n";
+		string += "\t\t<line x1=\"" + xmin + "\" y1=\"" + ymin + "\" x2=\"" + xmax + "\" y2=\"" + ymin + "\" stroke-width=\"1\" stroke=\"black\"/>\n";
 		if(this.max != null) {
-			string += "\t<line x1=\"" + xmin.subtract(BigDecimal.ONE) + "\" y1=\"" + this.max.value.toPlainString() + "\" x2=\"" + xmax.subtract(xmin).add(BigDecimal.ONE).add(BigDecimal.ONE) + "\" y2=\"" + this.max.value.toPlainString() + "\" stroke-width=\"1\" stroke=\"red\"/>\n";
+			string += "\t\t<line x1=\"" + xmin.subtract(BigDecimal.ONE) + "\" y1=\"" + this.max.value.toPlainString() + "\" x2=\"" + xmax.subtract(xmin).add(BigDecimal.ONE).add(BigDecimal.ONE) + "\" y2=\"" + this.max.value.toPlainString() + "\" stroke-width=\"1\" stroke=\"red\"></line>\n";
 		}
 		for(Map.Entry<Graphable, Graphable> point : this.points.entrySet()) {
-			string += "\t<circle cx=\"" + point.getKey().value.toPlainString() + "\" cy=\"" + point.getValue().value.toPlainString() + "\" r=\"1\"/>\n";
+			string += "\t\t<circle cx=\"" + point.getKey().value.toPlainString() + "\" cy=\"" + point.getValue().value.toPlainString() + "\" r=\"1\"></circle>\n";
 		}
+		string += "\t</g>\n";
 		return string + "</svg>";
 	}
 }
