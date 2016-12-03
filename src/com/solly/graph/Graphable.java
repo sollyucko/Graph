@@ -26,4 +26,8 @@ public class Graphable {
 	public Graphable(double value, String meaning) {
 		this(new BigDecimal(value), meaning);
 	}
+	
+	public String toString() {
+		return this.meaning;
+	}
 }
