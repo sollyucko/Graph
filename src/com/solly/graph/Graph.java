@@ -37,8 +37,9 @@ public class Graph {
 	public String toSVG() {
 		BigDecimal xmin = null;
 		BigDecimal xmax = null;
-		BigDecimal ymin = this.max.value;
-		BigDecimal ymax = this.max.value;
+		BigDecimal ymin = null;
+		BigDecimal ymax = null;
+		int maxpairlength = 0;
 		for(Map.Entry<Graphable, Graphable> point : this.points.entrySet()) {
 			BigDecimal keyval = point.getKey().value;
 			BigDecimal valval = point.getValue().value;
@@ -47,6 +48,7 @@ public class Graph {
 			}
 			if(xmax == null || keyval.compareTo(xmax) > 0) {
 				xmax = keyval;
+				maxpairlength = point.getKey().meaning.length() + point.getValue().meaning.length() + 3;
 			}
 			if(ymin == null || valval.compareTo(ymin) < 0) {
 				ymin = valval;
@@ -60,22 +62,15 @@ public class Graph {
 			return "<svg></svg>";
 		}
 		
-		String string = "<svg viewbox=\"" + xmin.subtract(BigDecimal.ONE).subtract(BigDecimal.ONE).toPlainString() + " " + ymin.subtract(ymax).subtract(BigDecimal.ONE).toPlainString() + " " + xmax.subtract(xmin).add(BigDecimal.ONE).add(BigDecimal.ONE).add(BigDecimal.ONE).toPlainString() + " " + ymax.subtract(ymin).add(BigDecimal.ONE).add(BigDecimal.ONE).add(BigDecimal.ONE).toPlainString() + "\">\n";
-		string += "\t<g transform=\"translate(0, " + ymin + ") scale(1,-1)\">\n";
-		string += "\t\t<line x1=\"" + xmin.toPlainString() + "\" y1=\"" + ymin.toPlainString() + "\" x2=\"" + xmin.toPlainString() + "\" y2=\"" + ymax.toPlainString() + "\" stroke-width=\"1\" stroke=\"black\"/>\n";
-		string += "\t\t<line x1=\"" + xmin.toPlainString() + "\" y1=\"" + ymin.toPlainString() + "\" x2=\"" + xmax.toPlainString() + "\" y2=\"" + ymin.toPlainString() + "\" stroke-width=\"1\" stroke=\"black\"/>\n";
+		String string = "<svg viewbox=\"0 " + ymax.negate().subtract(ymin).subtract(BigDecimal.ONE).toPlainString() + " " + xmax.subtract(xmin).add(new BigDecimal(2)).add(new BigDecimal(maxpairlength)).toPlainString() + " " + ymin.negate().add(new BigDecimal(5.25)).toPlainString() + "\">\n";
 		if(this.max != null) {
-			string += "\t\t<line x1=\"" + xmin.subtract(BigDecimal.ONE).toPlainString() + "\" y1=\"" + this.max.value.toPlainString() + "\" x2=\"" + xmax.subtract(xmin).add(BigDecimal.ONE).add(BigDecimal.ONE).toPlainString() + "\" y2=\"" + this.max.value.toPlainString() + "\" stroke-width=\"1\" stroke=\"red\"></line>\n";
+			string += "\t<line x1=\"0\" y1=\"" + this.max.value.negate().subtract(ymin).toPlainString() + "\" x2=\"" + xmax.subtract(xmin).add(new BigDecimal(2)).toPlainString() + "\" y2=\"" + this.max.value.negate().subtract(ymin).toPlainString() + "\" stroke-width=\"1\" stroke=\"red\"></line>\n";
+			string += "\t<text font-size=\"1\" font-family=\"monospace\" x=\"0\" y=\"" + this.max.value.negate().subtract(ymin).add(new BigDecimal(0.25)).toPlainString() + "\">" + this.max.meaning + "</text>\n";
 		}
 		for(Map.Entry<Graphable, Graphable> point : this.points.entrySet()) {
-			string += "\t\t<circle cx=\"" + point.getKey().value.toPlainString() + "\" cy=\"" + point.getValue().value.toPlainString() + "\" r=\"1\"></circle>\n";
+			string += "\t<circle cx=\"" + point.getKey().value.subtract(xmin).add(BigDecimal.ONE).toPlainString() + "\" cy=\"" + point.getValue().value.negate().subtract(ymin).toPlainString() + "\" r=\"1\"></circle>\n";
+			string += "\t<text font-size=\"1\" font-family=\"monospace\" x=\"" + point.getKey().value.subtract(xmin).add(new BigDecimal(2)).toPlainString() + "\" y=\"" + point.getValue().value.negate().subtract(ymin).add(new BigDecimal(0.25)).toPlainString() + "\">" + "(" + point.getKey().meaning + ", " + point.getValue().meaning + ")" + "</text>\n";
 		}
-		string += "\t</g>\n";
-		string += "\t<g transform=\"translate(1, " + ymin.toPlainString() + ")\">\n";
-		for(Map.Entry<Graphable, Graphable> point : this.points.entrySet()) {
-			string += "\t<text font-size=\"1\" x=\"" + point.getKey().value.toPlainString() + "\" y=\"" + point.getValue().value.negate().toPlainString() + "\">" + "(" + point.getKey().meaning + ", " + point.getValue().meaning + ")" + "</text>\n";
-		}
-		string += "\t</g>";
 		return string + "</svg>";
 	}
 }
