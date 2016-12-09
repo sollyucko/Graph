@@ -2,6 +2,7 @@ package com.solly.graph;
 
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
 
 
 public class Time extends Graphable {
@@ -10,5 +11,9 @@ public class Time extends Graphable {
 	
 	public Time(java.sql.Time time) {
 		super(time.getTime(), time.toString());
+	}
+	
+	public Time(java.util.Date time) {
+		super(time.getTime(), DateFormat.getTimeInstance().format(time));
 	}
 }
